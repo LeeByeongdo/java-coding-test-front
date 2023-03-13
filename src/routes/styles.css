@@ -1,3 +1,44 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+h1,
+h3 {
+	color: var(--tw-prose-headings);
+	font-weight: 600;
+	margin-bottom: 0.6em;
+	line-height: 1.4;
+	letter-spacing: -0.025em;
+	scroll-margin-top: var(--scroll-mt);
+}
+
+.desc p,
+.desc ul {
+	color: #334155;
+}
+
+.desc ul {
+	list-style-type: none;
+	margin-bottom: 1.25em;
+	padding-left: 0;
+}
+
+.desc li:before {
+	content: '';
+	width: 0.75em;
+	height: 0.125em;
+	position: absolute;
+	top: calc(0.875em - 0.0625em);
+	left: 0;
+	border-radius: 999px;
+	background-color: #cbd5e1;
+}
+
+.desc > ul > li:not(:where([class~='not-prose'] *)) {
+	padding-left: 1.75em;
+	position: relative;
+}
+
+.nav {
+	min-width: 230px;
+}
