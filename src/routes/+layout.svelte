@@ -18,6 +18,7 @@
 
 	let dom: Element;
 	let codemirror: EditorView;
+	let errors: string[] = [];
 
 	onMount(async () => {
 		codemirror = new EditorView({
@@ -57,7 +58,7 @@
 			throw new Error(`Fetch error: ${res.statusText}`);
 		}
 
-		console.log(await res.json());
+		errors = await res.json();
 	}
 </script>
 
@@ -68,7 +69,7 @@
 		>
 			<div class="max-w-screen-2xl m-auto">
 				<div
-					class="py-4 border-b border-slate-900/10 lg:px-8 lg:border-0 dark:border-slate-300/10 mx-4 lg:mx-0"
+					class="border-b border-slate-900/10 lg:px-8 lg:border-0 dark:border-slate-300/10 mx-4 lg:mx-0"
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -99,10 +100,10 @@
 	<div class="flex flex-row max-w-screen-2xl m-auto">
 		<Navigation />
 		<div class="flex flex-grow">
-			<div class="desc basis-1/2 p-8">
+			<div class="desc basis-5/12 p-8">
 				<slot />
 			</div>
-			<div class="basis-1/2 p-8">
+			<div class="basis-7/12 p-8">
 				<div id="my-codemirror" bind:this={dom} />
 				<br />
 				<div class="text-right">
@@ -111,6 +112,11 @@
 						on:click={handleRunClick}>RUN</button
 					>
 				</div>
+				<ul>
+					{#each errors as error}
+						<li>{error}</li>
+					{/each}
+				</ul>
 			</div>
 		</div>
 	</div>
