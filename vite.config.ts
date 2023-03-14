@@ -10,7 +10,9 @@ export default defineConfig({
 			'@codemirror/lang-java',
 			'@codemirror/state',
 			'@codemirror/theme-one-dark',
-			'@codemirror/basic-setup'
+			'@codemirror/basic-setup',
+			'@codemirror/command',
+			'@codemirror/view'
 		]
 	}
 });

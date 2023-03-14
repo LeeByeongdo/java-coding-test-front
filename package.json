@@ -34,10 +34,12 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@codemirror/commands": "^6.2.2",
 		"@codemirror/lang-java": "6.0.1",
 		"@codemirror/state": "6.0.1",
 		"@codemirror/theme-one-dark": "^6.1.1",
 		"@codemirror/view": "^6.9.2",
-		"codemirror": "6.0.1"
+		"codemirror": "6.0.1",
+		"ky": "^0.33.2"
 	}
 }
