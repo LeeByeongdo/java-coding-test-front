@@ -1,4 +1,5 @@
-import type { RequestHandler } from "@sveltejs/kit";
+import { json, type RequestHandler } from "@sveltejs/kit";
+
 import ky from "ky";
 import { SERVER_URL } from '$env/static/private';
  
@@ -15,6 +16,7 @@ export const POST = (async ({ request }) => {
     throw new Error(`Fetch error: ${res.statusText}`);
   }
 
-  return await res.json();
+  const result = await res.json();
+  return json(result);
   
 }) satisfies RequestHandler;

@@ -18,7 +18,7 @@
 
 	let dom: Element;
 	let codemirror: EditorView;
-	let errors: string[] = [];
+	let errors: {result: string, input: string}[] = [];
 
 	onMount(async () => {
 		codemirror = new EditorView({
@@ -42,7 +42,7 @@
 			idx = '1';
 		}
 
-		if (sp[sp.length - 2] !== 'problem') {
+		if (sp[sp.length - 2] === 'optional-problem') {
 			type = 2;
 		}
 
@@ -109,11 +109,28 @@
 						on:click={handleRunClick}>RUN</button
 					>
 				</div>
-				<ul>
-					{#each errors as error}
-						<li>{error}</li>
-					{/each}
-				</ul>
+				{#if errors && errors.length > 0}
+				<div class="relative rounded-xl overflow-auto">
+					<div class="shadow-sm overflow-hidden my-8">
+						<table class="border-collapse table-auto w-full text-sm">
+							<thead>
+								<tr>
+									<th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">결과</th>
+									<th class="border-b dark:border-slate-600 font-medium p-4 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">정답</th>
+								</tr>
+							</thead>
+							<tbody class="bg-white dark:bg-slate-800">
+								{#each errors as error}
+								<tr>
+									<td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">{error.result}</td>
+									<td class="border-b border-slate-100 dark:border-slate-700 p-4 text-slate-500 dark:text-slate-400">{error.input}</td>
+								</tr>
+								{/each}
+							</tbody>
+						</table>
+					</div>
+				</div>
+				{/if}				
 			</div>
 		</div>
 	</div>
