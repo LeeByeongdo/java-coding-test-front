@@ -18,7 +18,9 @@
 
 	let dom: Element;
 	let codemirror: EditorView;
-	let errors: {result: string, input: string}[] = [];
+	let errors: { result: string; input: string }[] = [];
+	let success = false;
+	let loading = false;
 
 	onMount(async () => {
 		codemirror = new EditorView({
@@ -35,6 +37,8 @@
 	});
 
 	async function handleRunClick() {
+		loading = true;
+		success = false;
 		const sp = window.location.pathname.split('/');
 		let type = 1;
 		let idx = sp[sp.length - 1];
@@ -47,15 +51,24 @@
 		}
 
 		const code = codemirror.state.doc.toString().trim();
-		const res = await ky.post('/api/run', {
-			json: { code, idx, type },
-		});
+		try {
+			const res = await ky.post('/api/run', {
+				json: { code, idx, type }
+			});
 
-		if (!res.ok) {
-			throw new Error(`Fetch error: ${res.statusText}`);
+			if (!res.ok) {
+				loading = false;
+				throw new Error(`Fetch error: ${res.statusText}`);
+			}
+
+			errors = await res.json();
+			success = errors.length === 0;
+		} catch (e) {
+			success = false;
+			console.log(e);
 		}
 
-		errors = await res.json();
+		loading = false;
 	}
 </script>
 
@@ -106,31 +119,72 @@
 				<div class="text-right">
 					<button
 						class="ml-auto bg-slate-900 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 text-white font-semibold h-12 px-6 rounded-lg w-full flex items-center justify-center sm:w-auto dark:bg-sky-500 dark:highlight-white/20 dark:hover:bg-sky-400"
-						on:click={handleRunClick}>RUN</button
+						on:click={handleRunClick}
+					>
+						{#if loading}
+							<svg
+								class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+							>
+								<circle
+									class="opacity-25"
+									cx="12"
+									cy="12"
+									r="10"
+									stroke="currentColor"
+									stroke-width="4"
+								/>
+								<path
+									class="opacity-75"
+									fill="currentColor"
+									d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+								/>
+							</svg>
+						{/if}
+						{#if loading}TESTING...{:else}RUN{/if}</button
 					>
 				</div>
+				{#if success}
+				<h3 class="text-green-700">SUCCESS!</h3>
+				{/if}
 				{#if errors && errors.length > 0}
-				<div class="relative rounded-xl overflow-auto">
-					<div class="shadow-sm overflow-hidden my-8">
-						<table class="border-collapse table-auto w-full text-sm">
-							<thead>
-								<tr>
-									<th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">결과</th>
-									<th class="border-b dark:border-slate-600 font-medium p-4 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">정답</th>
-								</tr>
-							</thead>
-							<tbody class="bg-white dark:bg-slate-800">
-								{#each errors as error}
-								<tr>
-									<td class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400">{error.result}</td>
-									<td class="border-b border-slate-100 dark:border-slate-700 p-4 text-slate-500 dark:text-slate-400">{error.input}</td>
-								</tr>
-								{/each}
-							</tbody>
-						</table>
+					<div class="relative rounded-xl overflow-auto">
+						<h3 class="text-red-700">FAILED</h3>
+						<div class="shadow-sm overflow-hidden my-8">
+							
+							<table class="border-collapse table-auto w-full text-sm">
+								<thead>
+									<tr>
+										<th
+											class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left"
+											>결과</th
+										>
+										<th
+											class="border-b dark:border-slate-600 font-medium p-4 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left"
+											>정답</th
+										>
+									</tr>
+								</thead>
+								<tbody class="bg-white dark:bg-slate-800">
+									{#each errors as error}
+										<tr>
+											<td
+												class="border-b border-slate-100 dark:border-slate-700 p-4 pl-8 text-slate-500 dark:text-slate-400"
+												>{error.result}</td
+											>
+											<td
+												class="border-b border-slate-100 dark:border-slate-700 p-4 text-slate-500 dark:text-slate-400"
+												>{error.input}</td
+											>
+										</tr>
+									{/each}
+								</tbody>
+							</table>
+						</div>
 					</div>
-				</div>
-				{/if}				
+				{/if}
 			</div>
 		</div>
 	</div>
