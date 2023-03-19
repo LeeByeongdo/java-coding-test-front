@@ -12,7 +12,6 @@
 	import './styles.css';
 	import { onMount } from 'svelte';
 	import Navigation from '../components/Navigation.svelte';
-	import { PUBLIC_SERVER_URL } from '$env/static/public';
 
 	let value =
 		'public void solution() {\n\t System.out.println("hello world!");\n}\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n';
@@ -48,11 +47,8 @@
 		}
 
 		const code = codemirror.state.doc.toString().trim();
-		const res = await ky.post(PUBLIC_SERVER_URL, {
+		const res = await ky.post('/api/run', {
 			json: { code, idx, type },
-			headers: {
-				'Access-Control-Allow-Origin': '*'
-			}
 		});
 
 		if (!res.ok) {
